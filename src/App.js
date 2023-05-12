@@ -1,25 +1,111 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+import {
+  useGetTodosQuery,
+  useAddTodoMutation,
+  useGetTodoQuery,
+  useDeleteTodoMutation,
+  useUpdateTodoMutation,
+} from "./components/features/apiSlice";
+import { useFormik } from "formik";
+import Form from 'react-bootstrap/Form';
 
-function App() {
+export const Delete = () => {
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleteTodo, res] = useDeleteTodoMutation();
+  console.log(res);
+
+  const handleDelete = (id) => {
+    deleteTodo(id);
+    setDeleteId(null);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input
+        onChange={(event) => {
+          setDeleteId(event.target.value);
+        }}
+        type="text"
+        value={deleteId}
+      />
+      <input type="color"/>
+      <br />
+      <button onClick={() => handleDelete(deleteId)}>deleteTodo</button>
     </div>
   );
-}
+};
 
-export default App;
+export const Todo = () => {
+  const { data, isLoading, isError, error, isSuccess } = useGetTodoQuery(3);
+
+  let content;
+  if (isLoading) {
+    content = <h1>Loading...</h1>;
+  } else if (isSuccess) {
+    content = JSON.stringify(data);
+  } else if (isError) {
+    content = <p>{error}</p>;
+  }
+
+  return (
+    <div>
+      <button>AllTodo</button>
+      {content}
+      <br />
+    </div>
+  );
+};
+export const AllTodo = () => {
+  const { data } = useGetTodosQuery();
+  let listTodods = [];
+  if (data !== undefined) {
+    listTodods = data;
+  }
+
+  return (
+    <ul>
+      {listTodods.map((eachone) => (
+        <div>
+          <p>userId:{eachone.userId}</p>
+          <p>Id:{eachone.id}</p>
+          <p>title:{eachone.title}</p>
+          <p>completed:{eachone.completed}</p>
+          <hr />
+        </div>
+      ))}
+    </ul>
+  );
+};
+
+export const AddAll = () => {
+  const [addTodo] = useAddTodoMutation();
+
+  const formik = useFormik({
+    initialValues: {
+      id: "",
+      userId: "",
+      title: "",
+      completed: "  false",
+    },
+    onSubmit: (values) => {
+      addTodo(values);
+      formik.resetForm();
+    },
+  });
+
+  return (
+    <Form onSubmit={formik.handleSubmit}>
+      <Form.Label>userId</Form.Label>
+      <Form.Control type="text" {...formik.getFieldProps("userId")} />
+      <br />
+      <Form.Label>id</Form.Label>
+      <Form.Control type={"text"} {...formik.getFieldProps("id")} />
+      <br />
+      <Form.Label>title</Form.Label>
+      <Form.Control type="text" {...formik.getFieldProps("title")} />
+      <br />
+
+      <button type="submit">addTodo</button>
+    </Form>
+  );
+};
