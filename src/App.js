@@ -8,7 +8,7 @@ import {
   useUpdateTodoMutation,
 } from "./components/features/apiSlice";
 import { useFormik } from "formik";
-import Form from 'react-bootstrap/Form';
+import {Form,InputGroup,Button} from "react-bootstrap";
 
 export const Delete = () => {
   const [deleteId, setDeleteId] = useState(null);
@@ -28,7 +28,7 @@ export const Delete = () => {
         type="text"
         value={deleteId}
       />
-      <input type="color"/>
+      <input type="color" />
       <br />
       <button onClick={() => handleDelete(deleteId)}>deleteTodo</button>
     </div>
@@ -106,6 +106,27 @@ export const AddAll = () => {
       <br />
 
       <button type="submit">addTodo</button>
+      <InputGroup className="mb-3">
+      <Button
+        variant="outline-primary"
+        id="button-addon1"
+        style={{ backgroundColor: '#fff', color: '#007bff' }}
+        onMouseOver={(e) => {
+          e.target.style.backgroundColor = '#007bff';
+          e.target.style.color = '#fff';
+        }}
+        onMouseOut={(e) => {
+          e.target.style.backgroundColor = '#fff';
+          e.target.style.color = '#007bff';
+        }}
+      >
+        Button
+      </Button>
+      <Form.Control
+        aria-label="Example text with button addon"
+        aria-describedby="basic-addon1"
+      />
+    </InputGroup>
     </Form>
   );
 };
